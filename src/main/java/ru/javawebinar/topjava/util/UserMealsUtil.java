@@ -24,16 +24,20 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExceed>  getFilteredWithExceeded(List<UserMeal> mealList, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        mealList.sort(Comparator.comparing(UserMeal::getDateTime));
+
         Map<LocalDateTime, Integer> meals = new HashMap<>();
         List<UserMealWithExceed> resultList = new ArrayList<>();
         mealList.forEach(meal -> {
             if (TimeUtil.isBetween(meal.getDateTime().toLocalTime(), startTime, endTime)) {
                 meals.merge(meal.getDateTime(), meal.getCalories(), Integer::sum);
-                resultList.add(new UserMealWithExceed(meal, meals.get(meal.getDateTime()) > caloriesPerDay));
-                // тут надо как-то проверять, что перешли на следующую дату, и обновлять при необходимости поле exceed у части списка
             }
         });
+        mealList.forEach(meal -> {
+            if (TimeUtil.isBetween(meal.getDateTime().toLocalTime(), startTime, endTime)) {
+                resultList.add(new UserMealWithExceed(meal.getDateTime(), meal.getDescription(), meal.getCalories(), meals.get(meal.getDateTime()) > caloriesPerDay));
+            }
+        });
+
         return resultList;
     }
 }
