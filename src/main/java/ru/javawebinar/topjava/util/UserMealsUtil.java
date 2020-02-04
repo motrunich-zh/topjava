@@ -6,8 +6,7 @@ import ru.javawebinar.topjava.model.UserMealWithExceed;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class UserMealsUtil {
     public static void main(String[] args) {
@@ -25,7 +24,16 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExceed>  getFilteredWithExceeded(List<UserMeal> mealList, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        // TODO return filtered list with correctly exceeded field
-        return null;
+        mealList.sort(Comparator.comparing(UserMeal::getDateTime));
+        Map<LocalDateTime, Integer> meals = new HashMap<>();
+        List<UserMealWithExceed> resultList = new ArrayList<>();
+        mealList.forEach(meal -> {
+            if (TimeUtil.isBetween(meal.getDateTime().toLocalTime(), startTime, endTime)) {
+                meals.merge(meal.getDateTime(), meal.getCalories(), Integer::sum);
+                resultList.add(new UserMealWithExceed(meal, meals.get(meal.getDateTime()) > caloriesPerDay));
+                // тут надо как-то проверять, что перешли на следующую дату, и обновлять при необходимости поле exceed у части списка
+            }
+        });
+        return resultList;
     }
 }
