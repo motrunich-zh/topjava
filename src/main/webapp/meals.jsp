@@ -4,7 +4,6 @@
 <html>
 <head>
     <title>Meals</title>
-    <jsp:useBean id="mealsBean" scope="page" class="ru.javawebinar.topjava.web.MealsBean"/>
 </head>
 <body>
 <h3><a href="index.html">Home</a></h3>
@@ -16,11 +15,10 @@
         <th>Время</th>
         <th>Описание</th>
         <th>Калории</th>
-        <th>Превышение нормы</th>
     </tr>
     </thead>
     <tbody>
-    <c:forEach var="meal" items="${mealsBean.meals}">
+    <c:forEach var="meal" items="${requestScope.meals}">
         <tr style="background-color:${meal.excess ? 'red' : 'greenyellow'}">
             <td>
                 <fmt:parseDate value="${ meal.dateTime }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime"
@@ -29,7 +27,6 @@
             </td>
             <td><c:out value="${meal.description}"/></td>
             <td><c:out value="${meal.calories}"/></td>
-            <td><c:out value="${meal.excess}"/></td>
         </tr>
     </c:forEach>
     </tbody>
